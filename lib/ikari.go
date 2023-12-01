@@ -1,10 +1,13 @@
 package ikari
 
 import (
+	"fmt"
 	"strings"
 
 	"golang.org/x/net/html"
 )
+
+var replaceCount int
 
 func wrapTextWithAnchor(htmlContent string) (string, error) {
 	doc, err := html.Parse(strings.NewReader(htmlContent))
@@ -24,16 +27,27 @@ func wrapTextWithAnchor(htmlContent string) (string, error) {
 
 func wrapTextWithAnchorRecursive(n *html.Node, targetTag string, anchorTag string) {
 	if n.Type == html.ElementNode && n.Data == targetTag {
+		n.Attr = append(n.Attr, html.Attribute{
+			Key: "id",
+			Val: fmt.Sprintf("count%d", replaceCount),
+		})
+
 		// 対象のノードを新しいアンカーノードで置き換える
 		newAnchorNode := &html.Node{
 			Type: html.ElementNode,
 			Data: anchorTag,
-			Attr: []html.Attribute{},
+			Attr: []html.Attribute{
+				{
+					Key: "href",
+					Val: fmt.Sprintf("#count%d", replaceCount),
+				},
+			},
 			FirstChild: &html.Node{
 				Type: html.TextNode,
 				Data: n.FirstChild.Data, // リンクのテキストを指定
 			},
 		}
+		replaceCount++
 
 		// 既存のノードを置き換える
 		replaceNode(n, newAnchorNode)
