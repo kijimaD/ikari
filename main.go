@@ -2,17 +2,16 @@ package main
 
 import (
 	"bytes"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 
-	ikari "github.com/kijimaD/sokotwo/Project/ikari/lib"
+	ikari "github.com/kijimaD/ikari/lib"
 	"golang.org/x/net/html"
 )
 
 func main() {
-	bs, err := ioutil.ReadFile("input.html")
+	bs, err := os.ReadFile("input.html")
 	if err != nil {
 		log.Fatal(err)
 	}
