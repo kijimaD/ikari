@@ -15,7 +15,7 @@ func wrapTextWithAnchor(htmlContent string) (string, error) {
 		return "", err
 	}
 
-	wrapTextWithAnchorRecursive(doc, "p", "a")
+	WrapTextWithAnchorRecursive(doc, "p", "a")
 
 	var buf strings.Builder
 	if err := html.Render(&buf, doc); err != nil {
@@ -25,8 +25,8 @@ func wrapTextWithAnchor(htmlContent string) (string, error) {
 	return buf.String(), nil
 }
 
-func wrapTextWithAnchorRecursive(n *html.Node, targetTag string, anchorTag string) {
-	if n.Type == html.ElementNode && n.Data == targetTag {
+func WrapTextWithAnchorRecursive(n *html.Node, targetTag string, anchorTag string) {
+	if n.Type == html.ElementNode && n.Data == targetTag && n.FirstChild != nil {
 		n.Attr = append(n.Attr, html.Attribute{
 			Key: "id",
 			Val: fmt.Sprintf("count%d", replaceCount),
@@ -43,10 +43,12 @@ func wrapTextWithAnchorRecursive(n *html.Node, targetTag string, anchorTag strin
 				},
 			},
 			FirstChild: &html.Node{
-				Type: html.TextNode,
-				Data: n.FirstChild.Data, // リンクのテキストを指定
+				Type:       html.TextNode,
+				Data:       n.FirstChild.Data, // リンクのテキストを指定
+				FirstChild: n.FirstChild,
 			},
 		}
+
 		replaceCount++
 
 		// 既存のノードを置き換える
@@ -56,7 +58,7 @@ func wrapTextWithAnchorRecursive(n *html.Node, targetTag string, anchorTag strin
 
 	// 再帰的に子ノードに適用
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
-		wrapTextWithAnchorRecursive(c, targetTag, anchorTag)
+		WrapTextWithAnchorRecursive(c, targetTag, anchorTag)
 	}
 }
 

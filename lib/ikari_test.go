@@ -45,10 +45,10 @@ func TestWrapText(t *testing.T) {
 	doc, err := html.Parse(strings.NewReader("<p>hello</p>"))
 	assert.NoError(t, err)
 
-	wrapTextWithAnchorRecursive(doc, "p", "a")
+	WrapTextWithAnchorRecursive(doc, "p", "a")
 
 	var b bytes.Buffer
 	err = html.Render(&b, doc)
 	assert.NoError(t, err)
-	assert.Equal(t, "<html><head></head><body><p><a>hello</a></p></body></html>", b.String())
+	assert.Equal(t, `<html><head></head><body><p id="count0"><a href="#count0">hello</a></p></body></html>`, b.String())
 }
